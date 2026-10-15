@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>j-dev.me // SYSTEM OFFLINE</title>
+    <title>j-dev.me</title>
+    <!-- Taskbar / Browser Tab Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4 17 10 11 4 5'%3E%3C/polyline%3E%3Cline x1='12' y1='19' x2='20' y2='19'%3E%3C/line%3E%3C/svg%3E">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -128,7 +130,7 @@
     </main>
 
     <footer class="w-full border-t border-white pt-6 mt-16 text-xs text-neutral-400 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div>&copy; <span id="current-year"></span> J-DEV.ME aka Jahanzaib // ALL RIGHTS RESERVED.</div>
+        <div>&copy; <span id="current-year"></span> J-DEV.ME // ALL RIGHTS RESERVED.</div>
         <div>MOON BASE ALPHA // SECTOR 9</div>
     </footer>
 
@@ -162,14 +164,29 @@
         
         quoteBox.style.transition = 'opacity 0.2s ease-in-out';
 
-        // Countdown Timer Logic (Target: 7 days from now or rolling loop)
-        const targetTime = new Date().getTime() + (7 * 24 * 60 * 60 * 1000);
+        // Persistent 365-Day Countdown Timer Logic using localStorage
+        const STORAGE_KEY = 'jdev_target_time_365';
+        let targetTime = localStorage.getItem(STORAGE_KEY);
+
+        if (!targetTime) {
+            // Set target exactly 365 days from now on the first visit
+            targetTime = new Date().getTime() + (365 * 24 * 60 * 60 * 1000);
+            localStorage.setItem(STORAGE_KEY, targetTime);
+        } else {
+            targetTime = parseInt(targetTime, 10);
+        }
 
         function updateCountdown() {
             const now = new Date().getTime();
             const distance = targetTime - now;
 
-            if (distance < 0) return;
+            if (distance < 0) {
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+                return;
+            }
 
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
